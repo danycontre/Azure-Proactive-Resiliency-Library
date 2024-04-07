@@ -40,7 +40,7 @@ The presented resiliency recommendations in this guidance include Azure Virtual 
 | [AVD-24 - Ensure virtual networks have route tables/route server configured for all regions](#avd-24---ensure-virtual-networks-have-route-tablesroute-server-configured-for-all-regions) | Networking | Medium | Verified | No |
 | [AVD-25 - Ensure virtual networks isolation with separate IP space and NSGs for Prod and DR](#avd-25---ensure-virtual-networks-isolation-with-separate-ip-space-and-nsgs-for-prod-and-dr) | Networking | Medium | Verified | No |
 | [AVD-26 - Ensure route tables accommodate failover](#avd-26---ensure-route-tables-accommodate-failover) | Disaster Recovery | Medium | Verified | No |
-| [AVD-27 - Configure routes to allow session host to control plane traffic to go directly out of the subnet](#avd-27---configure-routes-to-allow-session-host-to-control-plane-traffic-to-go-directly-out-of-the-subnet) | Disaster Recovery | Medium | Verified | No |
+| [AVD-27 - Configure routes to directly connect from the subnet to the AVD control plane](#avd-27---configure-routes-to-allow-session-host-to-control-plane-traffic-to-go-directly-out-of-the-subnet) | Disaster Recovery | Medium | Verified | No |
 | [AVD-28 - Ensure Resilient Deployment of Keyvault for AVD Host Pools](#avd-28---provision-secondary-key-vault-for-disaster-recovery) | Disaster Recovery | High | Verified | No |
 | [AVD-29 - Configure AVD insights Workbook](#avd-29---configure-avd-insights-workbook) | Monitoring | High | Verified | No |
 | [AVD-30 - Ensure separate log analytics workspaces for Prod and DR](#avd-30---ensure-separate-log-analytics-workspaces-for-prod-and-dr) | Disaster Recovery | Low | Verified | No |
@@ -95,7 +95,7 @@ Azure Private Link Service enables you to access Azure Storage Account and Azure
 
 <br><br>
 
-### AVD-2 - Deploy Domain Controllers and DNS Servers in Azure Virtual Machines Across Availability Zones
+### AVD-2 - Deploy a pair of Domain Controllers and DNS Servers in Azure Virtual Machines Across Availability Zones in the same region as AVD session hosts
 
 **Category: Availability**
 
@@ -103,7 +103,7 @@ Azure Private Link Service enables you to access Azure Storage Account and Azure
 
 **Guidance**
 
-When using an AD DS identity solution with AVD, it is recommended to deploy at least a pair of domain controllers and DNS servers on Azure virtual machines across availability zones for each region where AVD session hosts are deployed. This improves the environment’s reliability by removing a dependency on an on-premises service and improves performance by creating a shorter path for user authentication.
+When using an AD DS identity solution with AVD, ensure each region with session hosts has multiple domain controllers and DNS servers on Azure virtual machines distributed across availability zones. This improves the environment’s reliability by removing a dependency on on-premises services and also mitigates dependency on ER/VPN/Inter-Azure dependencies while improving performance, because there is a shorter path for user authentication.
 
 This recommendation is not relevant when you are utilizing Microsoft Entra as the identity provider.
 
@@ -199,7 +199,7 @@ To handle a large number of users, consider scaling horizontally by creating mul
 
 ### AVD-6 - Create only one FSLogix file share per Storage Account
 
-### AVD-7 - Create one FSLogix file share per host pool
+### AVD-7 - Create a dedicated FSLogix file share and setup per host pool
 
 ### AVD-8 - Enable Azure Backup for FSLogix Storage Account
 
@@ -249,12 +249,7 @@ Each region has its own scaling plans assigned to host pools within that region.
 
 <br><br>
 
-
-
-
-
-
-### AVD-13 - Validate AVD Session Host Connectivity to the AVD Control Plane and UDP Ports open if in use
+### AVD-10 - Validate that the AVD session hosts can communicate with the AVD control plane and UDP ports are open if in use
 
 **Category: Networking**
 
@@ -265,19 +260,20 @@ Ensure that AVD session hosts can effectively communicate with the AVD control p
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/troubleshoot-rdp-shortpath)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/troubleshoot-rdp-shortpath)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/check-access-validate-required-fqdn-endpoint)
 
 **Resource Graph Query/Scripts**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-13/avd-13.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-10/avd-10.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-14 - Ensure Secondary Entra ID connect synchronization server
+### AVD-11 - Ensure Secondary Entra ID connect synchronization server
 
 **Category: Access & Security**
 
@@ -289,43 +285,19 @@ Set up secondary server in staging mode for Entra Connect for syncing to Entra i
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/how-to-connect-install-multiple-domains)
+- [Learn More](https://learn.microsoft.com/entra/identity/hybrid/connect/how-to-connect-install-multiple-domains)
 
 **Resource Graph Query/Scripts**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-14/avd-14.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-11/avd-11.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-15 - Deploy paired Domain Controllers in the same region as AVD session hosts
-
-**Category: Disaster Recovery**
-
-**Impact: High**
-
-**Guidance:**
-Ensure each region with session hosts has multiple domain controllers in the same region to support high availability with regards to identity.
-For a hybrid scenario, each Azure region with AVD session hosts should have Active Directory Domain Controllers in Azure and use Availability Zones or Availability Sets for resilience within the region. This also mitigates dependency on ER/VPN/Inter-Azure dependencies.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop-multi-region-bcdr)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-15/avd-15.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-16 - Ensure DNS regions are replicated to avoid single point of failure
+### AVD-12 - Ensure DNS regions are replicated to avoid single point of failure
 
 **Category: Networking**
 
@@ -336,42 +308,19 @@ Active Directory Domain Services (AD DS) integrated DNS/other should target Seco
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop-multi-region-bcdr)
+- [Learn More](https://learn.microsoft.com/azure/architecture/example-scenario/azure-virtual-desktop/azure-virtual-desktop-multi-region-bcdr)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-16/avd-16.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-12/avd-12.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-17 - Capacity Planning for AVD Resources
-
-**Category: Disaster Recovery**
-
-**Impact: Low**
-
-**Guidance:**
-Monitor and plan for subscription limits and API throttling limits. Closely monitor your Azure Virtual Desktop deployments and keep track of resource usage within your subscription. By proactively monitoring capacity, you can identify potential challenges early on, and you can take suitable actions to avoid reaching limits. Consider scaling across multiple subscriptions if further scaling is required, or work with Azure support to adjust limits based on your business requirements. To handle a large number of users, consider scaling horizontally by creating multiple host pools.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/azure/architecture/example-scenario/wvd/windows-virtual-desktop#azure-virtual-desktop-limitations)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-17/avd-17.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-18 - Create updated image version and replace session hosts rather than updating host directly
+### AVD-13 - Create updated image version and replace session hosts rather than updating host directly
 
 **Category: Governance**
 
@@ -383,19 +332,19 @@ has context menu
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/training/modules/create-manage-session-host-image/)
+- [Learn More](https://learn.microsoft.com/training/modules/create-manage-session-host-image/)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-18/avd-18.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-13/avd-13.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-19 - [Pooled] Create a validation pool for testing of planned updates
+### AVD-14 - Create a validation pool for testing of planned 
 
 **Category: Governance**
 
@@ -409,19 +358,19 @@ To ensure your apps work with the latest updates, the validation host pool shoul
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-validation-environment?tabs=azure-portal)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/configure-validation-environment?tabs=azure-portal)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-19/avd-19.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-14/avd-14.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-20 - [Pooled] Configure scheduled agent updates
+### AVD-15 - Configure scheduled agent updates
 
 **Category: System Efficiency**
 
@@ -433,7 +382,123 @@ The Scheduled Agent Updates feature lets you create up to two maintenance window
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/scheduled-agent-updates)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/scheduled-agent-updates)
+
+**Resource Graph Query/Scripts:**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-15/avd-15.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
+
+<br><br>
+
+### AVD-16 - Use Azure Site Recovery or Backups on VMs supporting personal desktops
+
+**Category: Disaster Recovery**
+
+**Impact: Medium**
+
+**Guidance:**
+Leverage Azure Site Recovery (ASR) or implement Azure Backup for personal host pools for seamless failover and failback capabilities, enabling the replication of VMs supporting personal desktops to a secondary Azure region. In the event of a disaster or unexpected outage, this ensures the recovery of these VMs from a known-state.
+
+**Resources:**
+
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/scheduled-agent-updates)
+
+**Resource Graph Query/Scripts:**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-16/avd-16.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
+
+<br><br>
+
+### AVD-17 - Ensure a unique OU is used when deploying host pools with domain joined session hosts
+
+**Category: Governance**
+
+**Impact: Medium**
+
+**Guidance:**
+Hybrid VMs should be in a unique OU. When using AD-joined, session hosts will benefit from using a unique OU to target specific AVD configurations per hostpool. Examples include Fslogix, time out limits, session controls, and much more. It’s also important to segment Prod and DR organization units to ensure resources are configured per environment.
+
+**Resources:**
+
+- [Learn More](https://learn.microsoft.com/windows-server/identity/ad-ds/deploy/virtual-dc/adds-on-azure-vm#configure-the-vms-and-install-active-directory-domain-services)
+
+**Resource Graph Query/Scripts:**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-17/avd-17.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
+
+<br><br>
+
+### AVD-18 - Ensure the standard FSLogix configuration is deployed
+
+**Category: Storage**
+
+**Impact: High**
+
+**Guidance:**
+Ensure all session hosts have the standard FSLogix configuration deployed. Regularly validate settings for consistency and alignment with best practices.
+
+**Resources:**
+
+- [Learn More](https://learn.microsoft.com/fslogix/reference-configuration-settings?tabs=profiles)
+
+**Resource Graph Query/Scripts:**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-18/avd-18.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
+
+<br><br>
+
+### AVD-19 - Ensure user permissions are set correctly on FSLogix SMB shares
+
+**Category: Storage**
+
+**Impact: High**
+
+**Guidance:**
+Verify user permissions are correctly set on SMB shares so that users have appropriate access to only their own profile and not other user profiles, while administrators have full access at the root volume. Also ensure secondary storage path permissions are set in case of a DR event.
+
+**Resources:**
+
+- [Learn More](https://learn.microsoft.com/fslogix/how-to-configure-storage-permissions)
+
+**Resource Graph Query/Scripts:**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-19/avd-19.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
+
+<br><br>
+
+### AVD-20 - Configure Diagnostic Settings on FSLogix storage and capture session hosts FSLogix events
+
+**Category: Storage**
+
+**Impact: Medium**
+
+**Guidance:**
+Configure diagnostic settings on FSLogix storage resources and regularly its metrics and FSLogix logs for errors. Events can be reviewed by looking locally inside the Session Host, but it is recommended to configure AVD insights workbook to consolidate this information to a Log Analytics workspace.
+
+**Resources:**
+
+- [Learn More](https://learn.microsoft.com/fslogix/troubleshooting-events-logs-diagnostics)
+- [Learn More](https://learn.microsoft.com/azure/storage/files/storage-files-monitoring)
 
 **Resource Graph Query/Scripts:**
 
@@ -445,20 +510,18 @@ The Scheduled Agent Updates feature lets you create up to two maintenance window
 
 <br><br>
 
-### AVD-21 - [Personal] Create a validation pool for testing of planned updates
+### AVD-21 - Manually install FSLogix updates
 
 **Category: Governance**
 
 **Impact: Low**
 
 **Guidance:**
-At least one Validation Pool to have early warning if a planned update to AVD causes an issue. Also check that the host pool has been used regularly to test planned updates.
-Host pools are a collection of one or more identical virtual machines within Azure Virtual Desktop environment. We highly recommend you create a validation host pool where service updates are applied first. Validation host pools let you monitor service updates before the service applies them to your standard or non-validation environment. Without a validation host pool, you may not discover changes that introduce errors, which could result in downtime for users in your standard environment.
-To ensure your apps work with the latest updates, the validation host pool should be as similar to host pools in your non-validation environment as possible. Users should connect as frequently to the validation host pool as they do to the standard host pool. If you have automated testing on your host pool, you should include automated testing on the validation host pool.
+Ensure a process is in place to regularly check for FSLogix agent upgrades and maintain FSLogix up to date. We recommend customers upgrade to the latest version of FSLogix as quickly as their deployment process can allow. FSLogix will provide hotfix releases which address current and potential bugs that impact customer deployments. Additionally, it is the first requirement when opening any support case.
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/configure-validation-environment?tabs=azure-portal)
+- [Learn More](https://learn.microsoft.com/fslogix/how-to-install-fslogix)
 
 **Resource Graph Query/Scripts:**
 
@@ -470,146 +533,7 @@ To ensure your apps work with the latest updates, the validation host pool shoul
 
 <br><br>
 
-### AVD-22 - Use Azure Site Recovery or Backups on VMs supporting personal desktops
-
-**Category: Disaster Recovery**
-
-**Impact: Medium**
-
-**Guidance:**
-Leverage Azure Site Recovery (ASR) or implement Azure Backup for personal host pools for seamless failover and failback capabilities, enabling the replication of VMs supporting personal desktops to a secondary Azure region. In the event of a disaster or unexpected outage, this ensures the recovery of these VMs from a known-state.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/scheduled-agent-updates)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-22/avd-22.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-23 - Ensure a unique OU when deploying VMs to Domain
-
-**Category: Governance**
-
-**Impact: Medium**
-
-**Guidance:**
-Hybrid VMs should be in a unique OU.
-When using AD-joined session hosts will benefit from using a unique OU to target specific AVD configurations per hostpool. Examples include Fslogix, time out limits, session controls, and much more. It’s also important to segment Prod and DR organization units to ensure resources are configured per environment.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/virtual-dc/adds-on-azure-vm#configure-the-vms-and-install-active-directory-domain-services)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-23/avd-23.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-24 - Ensure the standard FSLogix configuration is deployed
-
-**Category: Storage**
-
-**Impact: High**
-
-**Guidance:**
-Ensure all session hosts have the standard FSLogix configuration deployed. Regularly validate settings for consistency and alignment with best practices.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/fslogix/reference-configuration-settings?tabs=profiles)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-24/avd-24.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-25 - Ensure user permissions are set correctly on SMB shares
-
-**Category: Storage**
-
-**Impact: High**
-
-**Guidance:**
-Verify user permissions are correctly set on SMB shares so that users have appropriate access to only their own profile and not other user profiles, while administrators have full access at the root volume. Also ensure secondary storage path permissions are set in case of a DR event.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/fslogix/how-to-configure-storage-permissions)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-25/avd-25.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-26 - Configure Diagnostic Settings for FSLogix logs and enable review for accounts
-
-**Category: Storage**
-
-**Impact: Medium**
-
-**Guidance:**
-Regularly review FSLogix logs for errors and issues related to login and mounting the profile. Events can be reviewed by looking locally inside the Session Host and also in Log Analytics when the Azure Monitor Agent is used.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/fslogix/troubleshooting-events-logs-diagnostics)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-26/avd-26.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-27 - Manually update new FSLogix image when available
-
-**Category: Governance**
-
-**Impact: Low**
-
-**Guidance:**
-Ensure a process is in place to regularly check for FSLogix agent upgrades and maintain FSLogix up to date. We recommend customers upgrade to the latest version of FSLogix as quickly as their deployment process can allow. FSLogix will provide hotfix releases which address current and potential bugs that impact customer deployments. Additionally, it is the first requirement when opening any support case.
-
-**Resources:**
-
-- [Learn More](https://learn.microsoft.com/en-us/fslogix/how-to-install-fslogix)
-
-**Resource Graph Query/Scripts:**
-
-{{< collapse title="Show/Hide Query/Script" >}}
-
-{{< code lang="sql" file="code/avd-27/avd-27.kql" >}} {{< /code >}}
-
-{{< /collapse >}}
-
-<br><br>
-
-### AVD-28 - Turn on Continuous Availability for ANF if using App Attach
+### AVD-22 - Turn on Continuous Availability for ANF if using App Attach
 
 **Category: Availability**
 
@@ -623,19 +547,19 @@ Verify the number of users connecting to each file share to make sure the SMB pa
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-overview?pivots=msix-app-attach)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/app-attach-overview?pivots=msix-app-attach)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-28/avd-28.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-22/avd-22.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-29 - App attach should be placed in separate file share and Disaster recovery plan should include App attach storage
+### AVD-23 - App attach should be placed in separate file share and Disaster recovery plan should include App attach storage
 
 **Category: Storage**
 
@@ -651,19 +575,19 @@ Your file share should be in the same Azure region as your session hosts.
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/app-attach-overview?pivots=msix-app-attach)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/app-attach-overview?pivots=msix-app-attach)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-29/avd-29.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-23/avd-23.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-30 - Ensure virtual networks have route tables/route server configured for all regions
+### AVD-24 - Ensure virtual networks have route tables/route server configured for all regions
 
 **Category: Networking**
 
@@ -675,19 +599,19 @@ For high availability connections back to on-premises datacenters should conside
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering#need-for-redundant-connectivity-solution)
+- [Learn More](https://learn.microsoft.com/azure/expressroute/designing-for-disaster-recovery-with-expressroute-privatepeering#need-for-redundant-connectivity-solution)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-30/avd-30.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-24/avd-24.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-31 - Ensure virtual networks isolation with separate IP space and NSGs for Prod and DR
+### AVD-25 - Ensure virtual networks isolation with separate IP space and NSGs for Prod and DR
 
 **Category: Networking**
 
@@ -701,19 +625,19 @@ It's important your organization plans for IP addressing in Azure. Planning ensu
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/plan-for-ip-addressing)
+- [Learn More](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/azure-best-practices/plan-for-ip-addressing)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-31/avd-31.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-25/avd-25.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-33 - Ensure route tables accommodate failover
+### AVD-26 - Ensure route tables accommodate failover
 
 **Category: Disaster Recovery**
 
@@ -727,19 +651,21 @@ AVD workload teams should collaborate with centralized teams that manage the sha
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/design-area/management-business-continuity-disaster-recovery)
+- [Learn More](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/design-area/management-business-continuity-disaster-recovery)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-33/avd-33.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-26/avd-26.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-34 - Provision Secondary Key Vault for Disaster Recovery
+### AVD-27 - Configure routes to directly connect from the subnet to the AVD control plane
+
+### AVD-28 - Ensure Resilient Deployment of Keyvault for AVD Host Pools
 
 **Category: Disaster Recovery**
 
@@ -750,17 +676,17 @@ To ensure continuous availability and disaster recovery readiness, it is recomme
 
 **Resources:**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/key-vault/general/disaster-recovery-guidance)
+- [Learn More](https://learn.microsoft.com/azure/key-vault/general/disaster-recovery-guidance)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-34/avd-34.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-28/avd-28.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
-### AVD-35 - Configure AVD Insights Workbook
+### AVD-29 - Configure AVD insights Workbook
 
 **Category: Monitoring**
 
@@ -772,19 +698,19 @@ AVD Insights is an Azure Workbook template provided by the AVD product team. It 
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/insights?tabs=monitor)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/insights?tabs=monitor)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-35/avd-35.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-29/avd-29.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-36 - Ensure separate log analytics workspaces for Prod and DR
+### AVD-30 - Ensure separate log analytics workspaces for Prod and DR
 
 **Category: Disaster Recovery**
 
@@ -796,19 +722,19 @@ Having separate Log Analytics ensures that your DR environment is fully operatio
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/virtual-desktop/diagnostics-log-analytics)
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/diagnostics-log-analytics)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-36/avd-36.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-30/avd-30.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
 <br><br>
 
-### AVD-37 - Organize AVD resources using the AVD Scale unit model described by the AVD Landing Zone Methodology
+### AVD-31 - Organize AVD resources using the AVD Scale unit model described by the AVD Landing Zone Methodology
 
 **Category: Governance**
 
@@ -820,13 +746,13 @@ Follow AVD Landing Zone best practices using multiple resource groups based on r
 
 **Resources**
 
-- [Learn More](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone)
+- [Learn More](https://learn.microsoft.com/azure/cloud-adoption-framework/scenarios/azure-virtual-desktop/enterprise-scale-landing-zone)
 
 **Resource Graph Query/Scripts:**
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-37/avd-37.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-31/avd-31.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
