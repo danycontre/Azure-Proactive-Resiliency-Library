@@ -1,0 +1,7 @@
+// Azure Resource Graph Query
+// Return rows if service health alerts were configured for AVD service
+resources
+| where type == "microsoft.insights/activitylogalerts"
+| where properties.condition.allOf[0].equals == "ServiceHealth"
+| where properties.condition.allOf[1].containsAny[0] == "Windows Virtual Desktop" or properties.condition.allOf[2].containsAny[0] == "Windows Virtual Desktop"
+| project recommendationId = "AVD-2", name, id, tags, param1 = "AVDServiceHealthAlertsConfigured: True"

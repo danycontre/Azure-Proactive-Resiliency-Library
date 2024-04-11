@@ -45,6 +45,7 @@ The presented resiliency recommendations in this guidance include Azure Virtual 
 | [AVD-29 - Configure AVD insights Workbook](#avd-29---configure-avd-insights-workbook) | Monitoring | High | Verified | No |
 | [AVD-30 - Ensure separate log analytics workspaces for Prod and DR](#avd-30---ensure-separate-log-analytics-workspaces-for-prod-and-dr) | Disaster Recovery | Low | Verified | No |
 | [AVD-31 - Organize AVD resources using the AVD Scale unit model described by the AVD Landing Zone Methodology](#avd-31---organize-avd-resources-using-the-avd-scale-unit-model-described-by-the-avd-landing-zone-methodology) | Governance | Low | Verified | No |
+| [AVD-32 - Monitor Service Health and Resource Health of AVD](#avd-31---monitor-service-health-and-resource-health-for-avd) | Monitoring | High | Verified | No |
 | [IT-2 - Replicate your Image Templates to a secondary region](https://azure.github.io/Azure-Proactive-Resiliency-Library/services/compute/image-templates/#it-2---replicate-your-image-templates-to-a-secondary-region) | Disaster Recovery | Low | Preview | Yes |
 | [CG-1 - A minimum of three replicas should be kept for production image versions](https://azure.github.io/Azure-Proactive-Resiliency-Library/services/compute/compute-gallery/#cg-1---a-minimum-of-three-replicas-should-be-kept-for-production-image-versions) | Availability | Medium | Verified | Yes |
 | [CG-2 - Zone redundant storage should be used for image versions](https://azure.github.io/Azure-Proactive-Resiliency-Library/services/compute/compute-gallery/#cg-2---zone-redundant-storage-should-be-used-for-image-versions) | Availability | Medium | Verified | Yes |
@@ -756,6 +757,30 @@ Follow AVD Landing Zone best practices using multiple resource groups based on r
 {{< collapse title="Show/Hide Query/Script" >}}
 
 {{< code lang="sql" file="code/avd-31/avd-31.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
+
+<br><br>
+
+### AVD-32 - Monitor Service Health and Resource Health of AVD
+
+**Category: Governance**
+
+**Impact: Low**
+
+**Guidance**
+
+Use Service Health to stay informed about the health of the Azure services and regions that you use to insure their availability. Set up Service Health alerts so that you stay aware of service issues, planned maintenance, or other changes that might affect your Azure Virtual Desktop resources. Use Resource Health to monitor your VMs and storage solutions.
+
+**Resources**
+
+- [Learn More](https://learn.microsoft.com/azure/well-architected/azure-virtual-desktop/monitoring#resource-health)
+
+**Resource Graph Query/Scripts:**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-32/avd-32.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
