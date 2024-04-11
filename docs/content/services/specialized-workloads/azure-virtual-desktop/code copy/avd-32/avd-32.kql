@@ -1,6 +1,5 @@
 // Azure Resource Graph Query
 // Return rows if service health alerts were configured for AVD service
-
 resources
 | where type == "microsoft.insights/activitylogalerts"
 | where properties.condition.allOf[0].equals == "ServiceHealth"
