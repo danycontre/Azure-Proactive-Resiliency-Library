@@ -202,8 +202,38 @@ To handle a large number of users, consider scaling horizontally by creating mul
 <br><br>
 
 ### AVD-6 - Create only one FSLogix file share per Storage Account
+**Guidance**
+
+To maximize capacity and performance scaling it is recommended to creat only one file share per Azure files storage account, with this approach the single file share will be able to grow to the maximum capacities of the storage account.
+
+**Resources**
+
+- [Learn More](https://learn.microsoft.com/azure/storage/files/storage-files-scale-targets)
+
+**Resource Graph Query**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-6/avd-6.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
 
 ### AVD-7 - Create a dedicated FSLogix file share and setup per host pool
+**Guidance**
+
+To maximize capacity and performance scaling of the file share service and avoid user's profile contention, it is recommended to creat one file share target and FSLogix setup per host pool.
+
+**Resources**
+
+- [Learn More](https://learn.microsoft.com/azure/virtual-desktop/create-host-pools-user-profile)
+
+**Resource Graph Query**
+
+{{< collapse title="Show/Hide Query/Script" >}}
+
+{{< code lang="sql" file="code/avd-7/avd-7.kql" >}} {{< /code >}}
+
+{{< /collapse >}}
 
 ### AVD-8 - Enable Azure Backup for FSLogix Storage Account
 
