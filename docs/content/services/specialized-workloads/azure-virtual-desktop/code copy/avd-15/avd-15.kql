@@ -1,5 +1,6 @@
 // Azure Resource Graph Query
 // This resource graph query will return all AVD host pools that does not have scheduled agent updates configured
+
 resources
 | where type =~ "Microsoft.DesktopVirtualization/hostpools"
 | where isnull(properties.agentUpdate) 

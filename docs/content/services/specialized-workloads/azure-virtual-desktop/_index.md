@@ -472,7 +472,7 @@ Ensure that AVD session hosts can effectively communicate with the AVD control p
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-10/avd-10.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-17/avd-17.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -496,7 +496,7 @@ Set up secondary server in staging mode for Entra Connect for syncing to Entra i
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-11/avd-11.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-18/avd-18.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -520,7 +520,7 @@ For high availability connections back to on-premises datacenters should conside
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-24/avd-24.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-19/avd-19.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -546,7 +546,7 @@ It's important your organization plans for IP addressing in Azure. Planning ensu
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-25/avd-25.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-20/avd-20.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -572,7 +572,7 @@ AVD workload teams should collaborate with centralized teams that manage the sha
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-26/avd-26.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-21/avd-21.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -621,7 +621,7 @@ has context menu
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-13/avd-13.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-23/avd-23.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -647,7 +647,7 @@ To ensure your apps work with the latest updates, the validation host pool shoul
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-14/avd-14.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-24/avd-24.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -671,7 +671,7 @@ The Scheduled Agent Updates feature lets you create up to two maintenance window
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-15/avd-15.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-25/avd-25.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -694,7 +694,7 @@ Ensure all session hosts have the standard FSLogix configuration deployed. Regul
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-18/avd-18.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-26/avd-26.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -717,7 +717,7 @@ Verify user permissions are correctly set on SMB shares so that users have appro
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-19/avd-19.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-27/avd-27.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -741,7 +741,7 @@ Configure diagnostic settings on FSLogix storage resources and regularly its met
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-20/avd-20.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-28/avd-28.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -764,7 +764,7 @@ Ensure a process is in place to regularly check for FSLogix agent upgrades and m
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-21/avd-21.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-29/avd-29.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -790,7 +790,7 @@ Verify the number of users connecting to each file share to make sure the SMB pa
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-22/avd-22.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-30/avd-30.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -818,7 +818,7 @@ Your file share should be in the same Azure region as your session hosts.
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-23/avd-23.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-31/avd-31.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
@@ -841,7 +841,7 @@ To ensure continuous availability and disaster recovery readiness, it is recomme
 
 {{< collapse title="Show/Hide Query/Script" >}}
 
-{{< code lang="sql" file="code/avd-28/avd-28.kql" >}} {{< /code >}}
+{{< code lang="sql" file="code/avd-32/avd-32.kql" >}} {{< /code >}}
 
 {{< /collapse >}}
 
